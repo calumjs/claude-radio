@@ -33,6 +33,33 @@ To reuse an existing Claude DJ install (with its crate) instead of the submodule
 { "dj": { "dir": "C:/path/to/claude-dj" } }
 ```
 
+### One radio, the existing DJ rig
+
+Use Radio as the station/host interface and Claude DJ as the music engine. The DJ stays a pinned submodule;
+an existing install can supply its crate, saved cues and production tools without copying or changing them.
+Set both the directory and URL if that install uses a different port:
+
+```json
+{
+  "port": 4849,
+  "dj": { "dir": "C:/path/to/claude-dj", "url": "http://localhost:4747" }
+}
+```
+
+Run `node radio.mjs start`, power on, tune **Hardstyle 150**, then click **Start engine** in the embedded
+decks once. `node radio.mjs dj status` and every other `radio dj ...` command use the same configured
+DJ port as the tuner. `RADIO_DJ_URL` can override that URL. Starting DJ or using its CLI requires a local
+HTTP endpoint; the state/duck bridge can also connect to an already running remote DJ server.
+
+Host breaks duck music and restore its previous master volume. Switching to a talk station or requesting
+a custom station pauses the decks. Skipping a break, changing stations, taking playback in another tab,
+or closing the active tab releases the duck. Late talking reports from an old tab cannot change the mix.
+The two audio engines still require their browser activation clicks. Radio's volume control adjusts host
+audio; the embedded DJ master controls music.
+
+This repository implements the four-deck DJ, station tuner, host queue and booth requests. Presenter mode,
+QR audience polls and audio streaming to phones are not implemented here.
+
 ## How it works
 | Piece | What it does |
 |---|---|
@@ -63,3 +90,14 @@ Or type your own in the tuner: Claude designs the station, casts the voices and 
 
 ## Tests
 `node --test test/*.test.mjs`: server tests run on a scratch port and data dir with `RADIO_TTS=fake` (silent audio, no credits).
+
+The combined-app tests use scratch copies of the real Radio and DJ servers, custom ports and a simulated
+DJ engine. Initialize `dj/` before running them. They cover CLI routing, duck/release, station switches,
+skip, disconnected players and playback ownership without using your crate or paid services.
+
+`npm run test:browser` is an optional check with an already installed Playwright and Chromium. It uses
+the real embedded browser engine, a locally generated synthetic tone and silent TTS fixtures. It checks
+non-silent output, captions, now playing, duck/release, talk-station pause and a browser booth request.
+If Playwright is outside this project's module search path, set `PLAYWRIGHT_MODULE` to its `index.mjs`;
+set `CHROMIUM_PATH` to an existing executable if needed. `RADIO_EVIDENCE_DIR` saves a screenshot and
+JSON results. This check does not install software or download music.

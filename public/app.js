@@ -100,8 +100,8 @@ function playBuf(run, buf) {
 /** tell the server a host is talking (it ducks the DJ); the release waits a beat so back-to-back segments don't pump */
 function setTalk(on) {
   clearTimeout(talkOffTimer);
-  if (on && !talkOn) { talkOn = true; post('/api/player/talking', { on: true }); }
-  if (!on && talkOn) talkOffTimer = setTimeout(() => { talkOn = false; post('/api/player/talking', { on: false }); }, 1200);
+  if (on) { talkOn = true; post('/api/player/talking', { client: myId, on: true }).catch(() => {}); }
+  if (!on && talkOn) talkOffTimer = setTimeout(() => { talkOn = false; post('/api/player/talking', { client: myId, on: false }).catch(() => {}); }, 1200);
 }
 
 // ------------------------------------------------------------------ the player loop

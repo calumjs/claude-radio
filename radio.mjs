@@ -5,6 +5,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from './lib/config.mjs';
+import { djEnvironment } from './lib/dj-bridge.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const config = loadConfig(ROOT);
@@ -178,7 +179,9 @@ const commands = {
   async dj() {
     const dir = path.resolve(ROOT, config.dj.dir);
     if (!fs.existsSync(path.join(dir, 'dj.mjs'))) fail(`Claude DJ not found at ${dir} (git submodule update --init, or set dj.dir in config.local.json)`);
-    const p = spawn(process.execPath, [path.join(dir, 'dj.mjs'), ...rest], { cwd: dir, stdio: 'inherit' });
+    const env = djEnvironment(process.env.RADIO_DJ_URL || config.dj.url);
+    const p = spawn(process.execPath, [path.join(dir, 'dj.mjs'), ...rest], { cwd: dir, env, stdio: 'inherit', windowsHide: true });
+    p.on('error', (e) => fail(e.message));
     p.on('close', (code) => process.exit(code ?? 0));
   },
   async help() {

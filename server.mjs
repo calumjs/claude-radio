@@ -48,6 +48,8 @@ const dj = new DJBridge({
 });
 setInterval(() => dj.poll(), 2000).unref();
 dj.poll();
+const musicTask = (job) => job.catch((e) => addLog('system', `Claude DJ: ${e.message}`));
+const releaseMusic = () => musicTask(dj.duck(false));
 
 const persist = () => fs.writeFileSync(stateFile, JSON.stringify({ station: current?.id || null }));
 
@@ -73,6 +75,7 @@ const players = () => [...clients.values()].filter((c) => c.player).length;
 // one tab plays at a time (like Claude DJ's engine claim): the latest to power on; the rest stand by
 let activePlayer = null;
 function claimPlayer(id) {
+  if (activePlayer !== id) releaseMusic();
   activePlayer = id;
   broadcast('player', { active: id });
 }
@@ -106,6 +109,11 @@ const pushQueue = () => broadcast('queue', { queue: queue.map(pub), queuedSec: q
 
 // ---------------------------------------------------------------- tuning
 function tune(st, source = 'cli') {
+  if (current?.id !== st.id) {
+    onAir = null;
+    broadcast('onair', null);
+    releaseMusic();
+  }
   current = st;
   pending = null;
   queue = queue.filter((s) => s.station === st.id);
@@ -115,7 +123,7 @@ function tune(st, source = 'cli') {
   pushQueue();
   if (source === 'ui') inbox.push({ ts: Date.now(), type: 'tune', station: st.id, text: `Listener tuned to ${st.freq.toFixed(1)} ${st.name}` });
   if (st.format !== 'talk') dj.start().catch((e) => addLog('system', `⚠ ${e.message}`));
-  else dj.pauseAll();
+  else musicTask(dj.pauseAll());
 }
 
 // ---------------------------------------------------------------- segments
@@ -180,6 +188,9 @@ function playerDone(id) {
   if (!onAir || onAir.seg.id !== id) return;
   stations.logAired(onAir.seg.station, onAir.seg);
   onAir = null;
+  // Adjacent talk segments share a duck. Recover even if the tab disappears
+  // before sending its delayed talking=false report.
+  setTimeout(() => { if (!onAir) releaseMusic(); }, 1500).unref();
   lastAirAt = Date.now();
   broadcast('onair', null);
   pushQueue();
@@ -232,7 +243,12 @@ const server = http.createServer(async (req, res) => {
       const ka = setInterval(() => res.write(': ka\n\n'), 15000);
       req.on('close', () => {
         clearInterval(ka); clients.delete(id);
-        if (activePlayer === id) activePlayer = null; // a standing-by tab can take over with "Play here"
+        if (activePlayer === id) {
+          activePlayer = null; // a standing-by tab can take over with "Play here"
+          onAir = null;
+          broadcast('onair', null);
+          releaseMusic();
+        }
       });
       return;
     }
@@ -259,7 +275,9 @@ const server = http.createServer(async (req, res) => {
       if (b.prompt) {
         // a station the listener typed: Claude builds it (radio-station skill); static until then
         pending = { prompt: b.prompt, ts: Date.now() };
-        current = null; queue = []; persist();
+        current = null; queue = []; onAir = null; persist();
+        broadcast('onair', null);
+        musicTask(dj.pauseAll());
         inbox.push({ ts: Date.now(), type: 'new-station', text: b.prompt });
         addLog('tune', `📡 Listener wants a new station: "${b.prompt}"`);
         broadcast('tune', { station: null, pending, source: b.source || 'ui' });
@@ -284,6 +302,7 @@ const server = http.createServer(async (req, res) => {
       // end it here too, so status is right even if the tab is asleep; the tab's later "done" for it is ignored
       const was = onAir?.seg.title;
       if (onAir) { addLog('system', `⏭ Skipped "${was}"`); playerDone(onAir.seg.id); }
+      releaseMusic();
       broadcast('skip', {}, true);
       return send(res, 200, { ok: true, skipped: was || null });
     }
@@ -296,7 +315,12 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, { ok: true });
     }
     if (p === '/api/player/done' && req.method === 'POST') { playerDone((await readBody(req)).id); return send(res, 200, { ok: true }); }
-    if (p === '/api/player/talking' && req.method === 'POST') { const b = await readBody(req); if (current?.format !== 'talk') dj.duck(!!b.on); return send(res, 200, { ok: true }); }
+    if (p === '/api/player/talking' && req.method === 'POST') {
+      const b = await readBody(req);
+      if (!activePlayer || b.client !== activePlayer) return send(res, 409, { ok: false, error: 'not the active player' });
+      if (current && current.format !== 'talk') await dj.duck(!!b.on);
+      return send(res, 200, { ok: true });
+    }
 
     // Claude ↔ listener
     if (p === '/api/inbox' && req.method === 'POST') {
