@@ -48,7 +48,7 @@ const dj = new DJBridge({
 });
 setInterval(() => musicTask(dj.poll().then(() => {
   // A DJ engine may connect after a saved talk station was loaded.
-  if ((current?.format === 'talk' || pending) && !dj.suspended) return dj.setMusicEnabled(false);
+  if ((current?.format === 'talk' || pending) && !dj.suspended?.complete) return dj.setMusicEnabled(false);
 })), 2000).unref();
 dj.poll();
 const musicTask = (job) => job.catch((e) => addLog('system', `Claude DJ: ${e.message}`));
