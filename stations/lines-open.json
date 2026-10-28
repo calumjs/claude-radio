@@ -1,0 +1,26 @@
+{
+  "id": "lines-open",
+  "name": "Lines Open",
+  "freq": 104.1,
+  "format": "talk",
+  "tagline": "late-night call-in, and the odd prank",
+  "brief": "A late-night call-in show. Listeners ring in with problems, rants, confessions and hot takes, and the host gives advice that is warm, funny and occasionally useful. Real listener messages from the booth become calls (read out or voiced as the caller, credited as 'a caller'). Between real calls, the callers are fictional characters with running storylines that come back night after night. The prank call segment is the producer phoning fictional businesses and characters with absurd requests; everyone and everything pranked is invented. Never prank or name a real person, business or phone number. Every call opens with an SFX phone ring or line click.",
+  "clock": [
+    "host open: tonight's topic + 'lines are open'",
+    "caller: a problem that needs advice",
+    "caller: rant or hot take, host pushes back",
+    "the prank call (fictional target, absurd request, escalates, the reveal)",
+    "station ident",
+    "regular caller: a running storyline continues",
+    "listener call from the booth",
+    "last call of the night"
+  ],
+  "hosts": [
+    { "name": "Ray", "voice": "Roger", "role": "host", "persona": "laid-back late-night host, warm and dry, heard everything, never shocked, gives genuinely decent advice" },
+    { "name": "Dazza", "voice": "Charlie", "role": "producer / prank caller", "persona": "Australian producer, chaotic energy, does the prank calls in a dead-straight voice until he cracks" },
+    { "name": "Gloria", "voice": "Bill", "role": "caller", "persona": "any older caller: retired, strong opinions, long stories, calls every week" },
+    { "name": "Tiff", "voice": "Laura", "role": "caller", "persona": "any young caller: dating disasters, group-chat drama, talks fast" },
+    { "name": "Morgan", "voice": "River", "role": "caller", "persona": "any calm caller: the prank target, the shop clerk, the deadpan voice of reason" },
+    { "name": "Bruce", "voice": "Harry", "role": "caller", "persona": "any angry caller: furious about something tiny, slowly calms down" }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "long-ago",
+  "name": "Long Ago FM",
+  "freq": 94.5,
+  "format": "talk",
+  "tagline": "history, told like a story",
+  "brief": "True stories from history told as narrative: forgotten people, strange events, the day something changed. Research primary-ish sources (museum, university, encyclopaedia, archive pages); keep dates and names right; tell it with suspense and scene-setting.",
+  "clock": [
+    "on this day (30s)",
+    "the story (3-4 min, narrator leads, co-host reacts)",
+    "the twist / what happened next",
+    "station ident",
+    "listener-style question about the period"
+  ],
+  "hosts": [
+    {
+      "name": "Arthur",
+      "voice": "George",
+      "role": "storyteller",
+      "persona": "warm British storyteller, unhurried, savours a reveal"
+    },
+    {
+      "name": "Vivian",
+      "voice": "Lily",
+      "role": "historian",
+      "persona": "sharp historian, adds the context and the myth-busting"
+    }
+  ]
+}

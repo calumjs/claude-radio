@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Radio</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='3' y='9' width='26' height='18' rx='3' fill='%23111'/><circle cx='11' cy='18' r='5' fill='none' stroke='%23ff7a45' stroke-width='2'/><rect x='19' y='14' width='7' height='2' fill='%2336d6e7'/><rect x='19' y='19' width='7' height='2' fill='%2336d6e7'/><line x1='8' y1='9' x2='22' y2='3' stroke='%23e8a17f' stroke-width='2'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="onair-led" title="On air"></span>CLAUDE<span class="dot">·</span>RADIO</div>
+  <div class="status" id="powerStatus"><span class="led"></span><span class="txt">off</span></div>
+  <div class="status" id="claudeStatus"><span class="led"></span><span class="txt">Claude away</span></div>
+  <div class="status" id="voiceStatus"><span class="txt">—</span></div>
+  <div class="status" id="djStatus" hidden><span class="led"></span><span class="txt">DJ</span></div>
+  <div class="spacer"></div>
+  <label class="mastervol">VOLUME <input type="range" id="volume" min="0" max="1" step="0.01" value="0.9"></label>
+</header>
+
+<section class="tuner">
+  <div class="readout">
+    <div class="freq"><span id="freq">--.-</span><small>FM</small></div>
+    <div class="stationmeta">
+      <div class="sname" id="stationName">Static</div>
+      <div class="tagline" id="stationTagline">Turn the dial, or type the station you want.</div>
+    </div>
+    <div class="signal" id="signal" title="Signal"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="dial" id="dial" tabindex="0" title="Drag or click to tune · ← → to step between stations">
+    <canvas id="dialCanvas" height="96"></canvas>
+    <div class="needle" id="needle"></div>
+  </div>
+  <div class="tunerrow">
+    <div class="presets" id="presets"></div>
+    <form class="custom" id="customForm">
+      <input id="customInput" autocomplete="off" placeholder="Type your own station: “two grumpy chefs on the history of food”">
+      <button type="submit" class="btn primary">TUNE IN</button>
+    </form>
+  </div>
+</section>
+
+<main class="studio">
+  <section class="onair panel">
+    <div class="panelhead"><h2>On air</h2><span class="segtitle" id="segTitle">—</span><button class="btn sm" id="skipBtn" title="Skip this segment">SKIP ⏭</button></div>
+    <div class="hosts" id="hosts"></div>
+    <canvas id="scope" height="70"></canvas>
+    <div class="caption" id="caption"><span class="who"></span><span class="said">Power on to listen.</span></div>
+    <div class="transcript" id="transcript"></div>
+  </section>
+
+  <aside class="side">
+    <section class="panel">
+      <div class="panelhead"><h2>Up next <small id="queuedSec"></small></h2></div>
+      <ol class="queue" id="queue"></ol>
+    </section>
+    <section class="panel">
+      <div class="panelhead"><h2>Sources <small>this segment</small></h2></div>
+      <ul class="sources" id="sources"><li class="empty">Sources for what the hosts say show up here.</li></ul>
+    </section>
+    <section class="panel booth">
+      <div class="panelhead"><h2>Booth</h2></div>
+      <div class="log" id="log"></div>
+      <form class="ask" id="askForm">
+        <input id="askInput" autocomplete="off" placeholder="Ask the hosts, or request a topic…">
+        <button class="btn" type="submit">SEND</button>
+      </form>
+    </section>
+  </aside>
+</main>
+
+<section class="music panel" id="music" hidden>
+  <div class="panelhead"><h2>Music <small>Claude DJ</small></h2><span class="np" id="nowPlaying">—</span><button class="btn sm" id="djToggle">SHOW DECKS</button></div>
+  <div class="djframe collapsed" id="djFrame">
+    <div class="djhint" id="djHint">Click <b>Start engine</b> in the decks below once so the music can play.</div>
+    <iframe id="djIframe" title="Claude DJ" allow="autoplay"></iframe>
+  </div>
+</section>
+
+<div class="overlay" id="powerOverlay">
+  <div class="card">
+    <div class="bigradio"><span></span></div>
+    <h1 id="overlayTitle">Claude Radio</h1>
+    <p id="overlayMsg">Stations researched and hosted live by Claude, voiced by ElevenLabs.<br>Browsers need one click before they'll play sound.</p>
+    <button class="btn primary big" id="powerBtn">POWER ON</button>
+  </div>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

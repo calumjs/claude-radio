@@ -1,0 +1,28 @@
+{
+  "id": "hardstyle-150",
+  "name": "Hardstyle 150",
+  "freq": 97.9,
+  "format": "music",
+  "tagline": "euphoric hardstyle, full volume",
+  "brief": "Hardstyle and euphoric hardstyle from the crate, mixed by Claude DJ. Hosts talk only on intros/outros: who the artist is, the story of the track, festival moments, a fact. Short, hyped, never over a drop.",
+  "music": {
+    "brief": "hardstyle / euphoric hardstyle, 148-155 BPM, anthems at the peak",
+    "talk": "a 10-25 s break every 2-3 tracks, over the incoming intro, ducked"
+  },
+  "clock": [
+    "track",
+    "track",
+    "talk break: back-announce + a fact about the next artist",
+    "track",
+    "track",
+    "ident"
+  ],
+  "hosts": [
+    {
+      "name": "Jax",
+      "voice": "Liam",
+      "role": "host",
+      "persona": "hyped festival MC energy, but knows the scene history"
+    }
+  ]
+}

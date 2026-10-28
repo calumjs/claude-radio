@@ -1,0 +1,23 @@
+{
+  "id": "the-assembly-line",
+  "name": "The Assembly Line",
+  "freq": 88.7,
+  "format": "talk",
+  "tagline": "AI, agents and software factories, argued",
+  "brief": "A moderated panel on how software gets built now: AI coding agents, agent fleets that turn issues into merged pull requests, platform engineering, and the history behind it (Microsoft's 2004 'Software Factories', model-driven development, CASE tools). Researched from papers, vendor docs, engineering blogs and this week's launches. The panel disagrees in good faith: an enthusiast, a sceptic, and a moderator who keeps them honest and asks for evidence. Benchmarks and vendor claims are always checked against the source.",
+  "clock": [
+    "moderator open + framing question",
+    "this week: one launch or paper, explained",
+    "the case for",
+    "the case against",
+    "station ident",
+    "history segment: where the idea came from",
+    "listener question to the panel",
+    "lightning round"
+  ],
+  "hosts": [
+    { "name": "Sarah", "voice": "Sarah", "role": "moderator", "persona": "sharp, fair panel moderator; keeps it moving, asks for evidence and examples" },
+    { "name": "Eric", "voice": "Eric", "role": "panelist", "persona": "platform engineering lead and AI-agent enthusiast; builds pipelines, talks in concrete examples" },
+    { "name": "Lily", "voice": "Lily", "role": "panelist", "persona": "veteran British software architect, sceptic; has seen CASE tools and model-driven hype come and go, cares about quality and people" }
+  ]
+}

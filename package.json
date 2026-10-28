@@ -1,0 +1,12 @@
+{
+  "name": "claude-radio",
+  "version": "0.1.0",
+  "description": "A radio station Claude runs: researched, multi-voice talk (ElevenLabs) and music via Claude DJ, steered from Claude Code.",
+  "type": "module",
+  "bin": { "radio": "./radio.mjs" },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

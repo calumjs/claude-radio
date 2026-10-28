@@ -1,0 +1,13 @@
+{
+  "port": 4848,
+  "elevenlabs": {
+    "model": "eleven_v4",
+    "fallbackModel": "eleven_v3",
+    "outputFormat": "mp3_44100_128"
+  },
+  "dj": {
+    "dir": "./dj",
+    "url": "http://localhost:4747",
+    "duckLevel": 0.3
+  }
+}

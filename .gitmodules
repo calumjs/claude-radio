@@ -1,0 +1,3 @@
+[submodule "dj"]
+	path = dj
+	url = https://github.com/calumjs/claude-dj.git
