@@ -51,8 +51,13 @@ decks once. `node radio.mjs dj status` and every other `radio dj ...` command us
 DJ port as the tuner. `RADIO_DJ_URL` can override that URL. Starting DJ or using its CLI requires a local
 HTTP endpoint; the state/duck bridge can also connect to an already running remote DJ server.
 
-Host breaks duck music and restore its previous master volume. Switching to a talk station or requesting
-a custom station pauses the decks. Skipping a break, changing stations, taking playback in another tab,
+Host breaks on music/mixed stations duck music and restore its previous master volume. Talk stations
+hide and disable the DJ set, mute it and pause its decks without unloading tracks or resetting positions.
+Returning to music shows the set and restores only decks that Radio paused, with a listener present.
+Already-paused decks stay paused. An explicit transport stop/change, changed master, changed track/position,
+or new engine while talk is selected cancels automatic resume; press play yourself when ready.
+The pause/resume snapshot is session-local, so restarting Radio never revives an old set. Requesting a
+custom station also suspends the set until its type is known. Skipping a break, taking playback in another tab,
 or closing the active tab releases the duck. Late talking reports from an old tab cannot change the mix.
 The two audio engines still require their browser activation clicks. Radio's volume control adjusts host
 audio; the embedded DJ master controls music.

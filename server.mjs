@@ -46,7 +46,10 @@ const dj = new DJBridge({
   log: (t) => addLog('system', t),
   onState: (s) => broadcast('dj', s),
 });
-setInterval(() => dj.poll(), 2000).unref();
+setInterval(() => musicTask(dj.poll().then(() => {
+  // A DJ engine may connect after a saved talk station was loaded.
+  if ((current?.format === 'talk' || pending) && !dj.suspended) return dj.setMusicEnabled(false);
+})), 2000).unref();
 dj.poll();
 const musicTask = (job) => job.catch((e) => addLog('system', `Claude DJ: ${e.message}`));
 const releaseMusic = () => musicTask(dj.duck(false));
@@ -112,7 +115,7 @@ function tune(st, source = 'cli') {
   if (current?.id !== st.id) {
     onAir = null;
     broadcast('onair', null);
-    releaseMusic();
+    if (st.format !== 'talk') releaseMusic();
   }
   current = st;
   pending = null;
@@ -122,8 +125,7 @@ function tune(st, source = 'cli') {
   broadcast('tune', { station: st, source });
   pushQueue();
   if (source === 'ui') inbox.push({ ts: Date.now(), type: 'tune', station: st.id, text: `Listener tuned to ${st.freq.toFixed(1)} ${st.name}` });
-  if (st.format !== 'talk') dj.start().catch((e) => addLog('system', `⚠ ${e.message}`));
-  else musicTask(dj.pauseAll());
+  musicTask(dj.setMusicEnabled(st.format !== 'talk', { resume: !!activePlayer }));
 }
 
 // ---------------------------------------------------------------- segments
@@ -261,7 +263,10 @@ const server = http.createServer(async (req, res) => {
       const st = stations.save(await readBody(req));
       addLog('system', `🛠 Station ${current?.id === st.id ? 'updated' : 'built'}: ${st.freq.toFixed(1)} ${st.name} (${st.hosts.map((h) => h.name).join(', ')})`);
       broadcast('stations', state().stations);
-      if (current?.id === st.id) { current = st; broadcast('tune', { station: st, source: 'update' }); } // the tuned station changed: refresh hosts/tagline
+      if (current?.id === st.id) {
+        current = st; broadcast('tune', { station: st, source: 'update' });
+        musicTask(dj.setMusicEnabled(st.format !== 'talk', { resume: !!activePlayer }));
+      }
       return send(res, 200, { ok: true, station: st });
     }
     if (p.startsWith('/api/stations/') && req.method === 'DELETE') {
@@ -277,7 +282,7 @@ const server = http.createServer(async (req, res) => {
         pending = { prompt: b.prompt, ts: Date.now() };
         current = null; queue = []; onAir = null; persist();
         broadcast('onair', null);
-        musicTask(dj.pauseAll());
+        musicTask(dj.setMusicEnabled(false));
         inbox.push({ ts: Date.now(), type: 'new-station', text: b.prompt });
         addLog('tune', `📡 Listener wants a new station: "${b.prompt}"`);
         broadcast('tune', { station: null, pending, source: b.source || 'ui' });
@@ -350,6 +355,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
+  if (current) musicTask(dj.setMusicEnabled(current.format !== 'talk', { resume: false }));
   addLog('system', `Claude Radio on http://localhost:${PORT}  ·  voices: ${eleven.fake ? 'fake (no ELEVENLABS_API_KEY or RADIO_TTS=fake)' : eleven.model}`);
   console.log(`Claude Radio listening on http://localhost:${PORT}`);
 });

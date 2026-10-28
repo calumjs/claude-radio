@@ -41,7 +41,7 @@ function connect(player) {
 }
 
 function onTune({ station, pending }) {
-  const changed = station?.id !== S.station?.id;
+  const changed = station?.id !== S.station?.id || station?.format !== S.station?.format;
   S.station = station; S.pending = pending || null;
   if (changed) { stopPlayback(); staticBurst(); $('#transcript').innerHTML = ''; renderSources([]); }
   renderAll();
@@ -217,11 +217,13 @@ function addLog(e) {
 }
 
 // ------------------------------------------------------------------ music (Claude DJ)
-let djUserOpen = false;
+let djUserOpen = true;
 function renderDJ() {
   const music = S.station && S.station.format !== 'talk';
   const d = S.dj || {};
   $('#music').hidden = !music;
+  $('#music').inert = !music;
+  $('#djToggle').disabled = !music;
   $('#djStatus').hidden = !music;
   $('#djStatus').className = 'status ' + (d.reachable && d.engine ? 'on' : d.reachable ? 'warn' : '');
   $('#djStatus .txt').textContent = !d.reachable ? 'DJ offline' : d.engine ? (d.ducked ? 'DJ ducked' : 'DJ live') : 'DJ engine off';

@@ -33,7 +33,7 @@ export async function player(base) {
 }
 
 // Own code, data, ports and processes. Never scans the user's crate or calls TTS.
-export async function combined() {
+export async function combined({ station } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'radio-dj-combined-'));
   const djDir = path.join(dir, 'dj');
   const radioPort = await freePort(), djPort = await freePort();
@@ -46,6 +46,10 @@ export async function combined() {
   fs.mkdirSync(path.join(djDir, 'library'));
   fs.writeFileSync(path.join(djDir, 'config.json'), JSON.stringify({ ...djConfig, port: djPort, libraryDirs: ['./library'], downloadDir: './library', stems: { enabled: false, auto: false }, autoDJ: { enabled: false }, monitor: { enabled: false }, deadAirGuard: false }));
   fs.writeFileSync(path.join(dir, 'config.json'), JSON.stringify({ port: radioPort, dj: { dir: './dj', url: `http://localhost:${djPort}`, duckLevel: 0.3 } }));
+  if (station) {
+    fs.mkdirSync(path.join(dir, '.radio'));
+    fs.writeFileSync(path.join(dir, '.radio', 'state.json'), JSON.stringify({ station }));
+  }
   const processes = [], logs = [];
   const stop = async () => {
     for (const proc of processes) {
